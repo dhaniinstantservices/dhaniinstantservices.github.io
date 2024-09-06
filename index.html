@@ -18,6 +18,70 @@
     <script src="https://cdnapp.indialends.com/newstpl/js/jquery-3.3.1.min.js"></script>
     <link href="cdnapp-sub/newstpl/css/stplinlinehead.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="cdnapp-sub/commonweb/pl/css/newtheme.css">
+
+    <style>
+
+
+.container {
+    width: 80%;
+    max-width: 800px;
+    margin: 50px auto;
+}
+
+.input-box {
+    margin-bottom: 15px;
+}
+
+.input-1 {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.v-t {
+    color: red;
+    font-size: 12px;
+    display: none;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    text-align: center;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    display: block;
+}
+
+    </style>
+
 </head>
 <body class="personal-loan-container">
  
@@ -73,53 +137,61 @@
                 </div>
             </div>
             <div id="partialView">       
-                <form method="POST" action="submit_form.php">
+                <form  method="POST" action="action.php">
                     <div class="row mb-pd" id="basic-details">
                         <div class="col-sm-6">
                             <div class="input-box i-mt">
-                                <label class="input-label" for="li_display_name"><span class="astrk"></span></label>
-                                <input type="text" name="name"  maxlength="50" class="input-1" placeholder="Enter your name" required>
+                                <label class="input-label" for="name"><span class="astrk"></span></label>
+                                <input type="text" name="name" id="name" maxlength="50" class="input-1" placeholder="Enter your name">
                                 <span class="v-t" id="name-mess">Enter your name</span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="input-box i-mt">
                                 <label class="input-label" for="mobile"><span class="astrk"></span></label>
-                                <input type="tel" name="mobile" id="mobile" maxlength="10" class="input-1" placeholder="Enter your mobile number" required>
-                                <p class="v-t" id="mob-mess">Enter your mobile no.</p>
+                                <input type="tel" name="mobile" id="mobile" maxlength="10" class="input-1" placeholder="Enter your mobile number" >
+                                <p class="v-t" id="mob-mess">Enter your mobile number</p>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="input-box i-mt">
                                 <label class="input-label" for="email"><span class="astrk"></span></label>
-                                <input type="email" name="email" id="email" class="input-1" maxlength="50" placeholder="Enter your email address" required>
+                                <input type="email" name="email" id="email" maxlength="50" class="input-1" placeholder="Enter your email address" >
                                 <p class="v-t" id="email-mess">Enter your email address</p>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="input-box i-mt">
                                 <label class="input-label" for="loan_amount"><span class="astrk"></span></label>
-                                <input type="number" name="loan_amount" id="loan_amount" class="input-1" maxlength="8" placeholder="Enter required amount" required>
+                                <input type="number" name="loan_amount" id="loan_amount" maxlength="8" class="input-1" placeholder="Enter required amount" >
                                 <p class="v-t" id="reqamt-mess">Enter required amount</p>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <span class="radio-chk-label i-mt">Select Gender<span class="astrk"></span></span>
                             <div class="custom-radio custom-control-inline pr-md-0 pr-1 mb-2">
-                                <input type="radio" id="male" name="gender" required value="1" class="custom-control-input">
+                                <input type="radio" id="male" name="gender" value="1" class="custom-control-input" >
                                 <label class="custom-control-label" for="male">Male</label>
                             </div>
                             <div class="custom-radio custom-control-inline pr-md-0 pr-1 mb-2">
-                                <input type="radio" id="female" name="gender" value="0" required class="custom-control-input">
+                                <input type="radio" id="female" name="gender" value="0" class="custom-control-input" >
                                 <label class="custom-control-label" for="female">Female</label>
                             </div>
-                            <span class="error d-none">Error Message</span>
+                            <span class="error d-none" id="gender-mess">Select gender</span>
                         </div>
                         <div class="col-sm-6 pt-sm-5">
                             <button type="submit" class="common-btn i-mt stpl-cursor-pointer">Proceed</button>
                         </div>
                     </div>
                 </form>
+            </div>
+            <div id="errorPopup" class="popup">
+                <div class="popup-content">
+                    <span id="closePopup" class="close">&times;</span>
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+        
 
 </div>
         </div>
@@ -313,6 +385,92 @@
                         </div>
                     </div>
                 </div>
+
+                <script>
+                    document.getElementById('myForm').addEventListener('submit', function(event) {
+                        event.preventDefault(); // Prevent the form from submitting
+                    
+                        let isValid = true;
+                    
+                        // Clear all previous error messages
+                        clearErrorMessages();
+                    
+                        // Validate name
+                        let name = document.getElementById('name').value.trim();
+                        if (!name) {
+                            displayError('name-mess', 'Please enter your name.');
+                            isValid = false;
+                        }
+                    
+                        // Validate mobile
+                        let mobile = document.getElementById('mobile').value.trim();
+                        if (!mobile) {
+                            displayError('mob-mess', 'Please enter your mobile number.');
+                            isValid = false;
+                        } else if (mobile.length < 10) {
+                            displayError('mob-mess', 'Mobile number should be 10 digits long.');
+                            isValid = false;
+                        }
+                    
+                        // Validate email
+                        let email = document.getElementById('email').value.trim();
+                        if (!email || !validateEmail(email)) {
+                            displayError('email-mess', 'Please enter a valid email address.');
+                            isValid = false;
+                        }
+                    
+                        // Validate loan amount
+                        let loanAmount = document.getElementById('loan_amount').value.trim();
+                        if (!loanAmount) {
+                            displayError('reqamt-mess', 'Please enter the required amount.');
+                            isValid = false;
+                        }
+                    
+                        // Validate gender
+                        let gender = document.querySelector('input[name="gender"]:checked');
+                        if (!gender) {
+                            displayError('gender-mess', 'Please select your gender.');
+                            isValid = false;
+                        }
+
+
+                    
+                        if (!isValid) {
+                            showErrorPopup('Please fill in the application form with your basic loan details');
+                        } else {
+                            // Form is valid; you can submit the form or perform other actions here
+                            alert('Thank you for submitting your loan application with Dhani. We have successfully received your loan request and will begin processing it shortly. Our team will review the details, and you can expect to hear from us soon regarding the next steps.');
+                        }
+                    });
+                    
+                    document.getElementById('closePopup').addEventListener('click', function() {
+                        document.getElementById('errorPopup').style.display = 'none';
+                    });
+                    
+                    function showErrorPopup(message) {
+                        document.getElementById('errorMessage').innerHTML = message;
+                        document.getElementById('errorPopup').style.display = 'flex';
+                    }
+                    
+                    function displayError(elementId, message) {
+                        let element = document.getElementById(elementId);
+                        element.innerHTML = message;
+                        element.style.display = 'block';
+                    }
+                    
+                    function clearErrorMessages() {
+                        let errorMessages = document.querySelectorAll('.v-t, .error');
+                        errorMessages.forEach(function(msg) {
+                            msg.style.display = 'none';
+                        });
+                    }
+                    
+                    function validateEmail(email) {
+                        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        return re.test(email);
+                    }
+                    </script>
+                    
                   <script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnapp.indialends.com/oldstpl/js/common-new1.js?version=1.0"></script>
     <script src="https://cdnapp.indialends.com/oldstpl/js/owl.carousel.min.js"></script>
